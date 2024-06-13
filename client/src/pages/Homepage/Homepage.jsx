@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
-import axios from "../../utils/axios";
+import './Homepage.css'
 
 export default function Homepage() {
-return (
+  return (
     <>
-        <h1>this is homepage</h1>
+      <h1>this is homepage</h1>
     </>
-)
+  );
 }
