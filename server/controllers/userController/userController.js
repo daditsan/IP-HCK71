@@ -1,6 +1,9 @@
-const { comparePassword, hashPassword } = require('../../helpers/bcrypt/bcrypt')
-const { signToken } = require('../../helpers/jwt/jwt')
-const { User } = require('../../models')
+const {
+  comparePassword,
+  hashPassword,
+} = require("../../helpers/bcrypt/bcrypt");
+const { signToken } = require("../../helpers/jwt/jwt");
+const { User } = require("../../models");
 
 class UserController {
   static async getUser(req, res, next) {
@@ -14,13 +17,11 @@ class UserController {
 
   static async postRegister(req, res, next) {
     try {
-      let { username, email, password, phoneNumber, address } = req.body;
+      let { username, email, password } = req.body;
       let user = await User.create({
         username,
         email,
         password,
-        phoneNumber,
-        address,
       });
 
       res
@@ -59,6 +60,57 @@ class UserController {
       next(error);
     }
   }
+
+  static async updateUserById(req, res, next) {
+    try {
+      let { id } = req.params;
+      let { username, email, password } = req.body;
+
+      let user = await User.findByPk(id);
+
+      if (!user) {
+        throw { name: "NotFound" };
+      }
+
+      await user.update(
+        {
+          username,
+          email,
+          password,
+        },
+        {
+          where: { id },
+        }
+      );
+
+      res.status(200).json({ message: "Update success", user });
+    } catch (error) {
+      console.log(error);
+      next(error);
+    }
+  }
+
+  static async deleteUserById(req, res, next) {
+    try {
+      let { id } = req.params;
+      let findId = await User.findByPk(id);
+
+      let deleteUserById = await User.destroy({
+        where: { id },
+      });
+
+      if (!deleteUserById) {
+        throw { name: "NotFound" };
+      }
+
+      res.status(200).json({ message: `${findId.name} deleted.` });
+    } catch (error) {
+        console.log(error);
+      next(error);
+    }
+  }
+
+  
 }
 
 module.exports = UserController;

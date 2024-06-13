@@ -1,5 +1,5 @@
-const { signToken, verifyToken } = require("../helpers/jwt");
-const { User } = require("../models");
+const { signToken, verifyToken } = require('../../helpers/jwt/jwt');
+const { User } = require("../../models");
 
 const authentication = async (req, res, next) => {
   try {
@@ -13,6 +13,10 @@ const authentication = async (req, res, next) => {
     const user = await User.findByPk(payload.id);
 
     if (!user) throw { name: "InvalidToken" };
+    req.user = {
+        id: user.id,
+      };
+      next();
   } catch (error) {
     next(error);
   }

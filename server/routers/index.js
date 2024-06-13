@@ -6,14 +6,21 @@ const openAI = require('../controllers/openAIController/openAIController')
 
 const errorHandler = require(`../middlewares/errorHandler/errorHandler`);
 const authentication = require("../middlewares/authentication/authentication");
-const openAIController = require("../controllers/openAIController/openAIController");
+const authorization = require(`../middlewares/authorization/authorization`)
 
 router.get('/')
 router.post('/register', UserController.postRegister)
 router.post('/login', UserController.postLogin)
 
-
 router.use(authentication)
+
+router.put('/edit/:id', UserController.updateUserById)
+router.put('/delete/:id', UserController.deleteUserById)
+
+
+
+let history = [];
+let theme = null;
 router.post("/game", async (req, res) => {
     const { userAnswer } = req.body
     try {
@@ -48,10 +55,11 @@ router.post("/game", async (req, res) => {
         res.json(response);
         console.log(history);
       } catch (error) {
+        console.log(error);
         res.status(500).send({ error: 'An error occurred while processing your request.' });
       }
     });
-
+    
 
 router.use(errorHandler);
 
