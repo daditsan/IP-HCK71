@@ -42,16 +42,32 @@ module.exports = async function openAI(userAnswer, history, theme) {
 
     The response must be in JSON format like this:
     {
-        "Question": "Your next question here",
-        "Guess": "Your guess here (optional)"
+      "Question": "Your next question here",
+      "Guess": "Your guess here (optional)"
     }
     ` : `
     You are playing a guessing game, and you are the guesser. Please start by asking the user for the theme of the game.
     
     The response must be in JSON format like this:
     {
-        "Question": "Your next question here",
-        "Guess": "Your guess here (optional)"
+      "Question": "Your next question here",
+      "Guess": "Your guess here (optional)"
+    }
+
+    When you ready to make a guess, give the response in JSON format like this:
+    {
+      "Guess": "I think what your thinking of is (give your guess here). Am i correct?"
+    }
+
+    If ${userAnswer} = "No", then your guess is wrong, response like this:
+    {
+      "Response": "I'll try to get it right next time. Wanna Play again?"
+    }
+
+    If ${userAnswer} = "Yes", start the game again by response with "initialQuestion"
+    If ${userAnswer} = "No", response in JSON format like this:
+    {
+      "Response": "Thanks for playing!"
     }
     `
   });

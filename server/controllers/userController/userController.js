@@ -65,7 +65,7 @@ class UserController {
     try {
       let { id } = req.params;
       let { username, email, password } = req.body;
-
+      password = hashPassword(password);
       let user = await User.findByPk(id);
 
       if (!user) {
@@ -94,7 +94,7 @@ class UserController {
     try {
       let { id } = req.params;
       let findId = await User.findByPk(id);
-
+      console.log(findId);
       let deleteUserById = await User.destroy({
         where: { id },
       });
@@ -103,7 +103,7 @@ class UserController {
         throw { name: "NotFound" };
       }
 
-      res.status(200).json({ message: `${findId.name} deleted.` });
+      res.status(200).json({ message: `${findId.username} deleted.` });
     } catch (error) {
         console.log(error);
       next(error);

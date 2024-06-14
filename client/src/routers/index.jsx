@@ -11,15 +11,28 @@ const router = createBrowserRouter([
     },
     {
       path: "/login",
-      element: <LoginPage />
+      element: <LoginPage />,
+      loader: () => {
+        if (localStorage.getItem("access_token")) {
+          return redirect('/game')
+        }
+        return null
+      }
     },
     {
       path: "/register",
       element: <RegisterPage />,
+
     },
     {
       path: "/game",
-      element: <GamePage />
+      element: <GamePage />,
+      loader: () => {
+        if (!localStorage.getItem("access_token")) {
+          return redirect('/login')
+        }
+        return null
+      }
     },
 ])
 

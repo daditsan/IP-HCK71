@@ -1,7 +1,14 @@
-import { Link } from "react-router-dom";
 import NavbarLogin from "../../components/NavbarLogin/NavbarLogin";
+import { Link } from "react-router-dom";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from '../../utils/axios'
 
 export default function LoginPage() {
+  const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
   return (
     <>
       <NavbarLogin />
@@ -13,7 +20,23 @@ export default function LoginPage() {
           display: "flex",
         }}
       >
-        <form className="max-w-sm mx-auto">
+        <form
+          className="max-w-sm mx-auto"
+          onSubmit={async (event) => {
+            event.preventDefault();
+            try {
+              const { data } = await axios.post("/login", {
+                email,
+                password,
+              });
+
+              localStorage.setItem("access_token", data.access_token);
+              navigate("/game");
+            } catch (error) {
+              console.log(error.response.data.message)
+            }
+          }}
+        >
           <div className="mb-5">
             <label
               htmlFor="email"
@@ -26,7 +49,10 @@ export default function LoginPage() {
               id="email"
               className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light"
               placeholder="name@mail.com"
-              required=""
+              required
+              name='email'
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
             />
           </div>
           <div className="mb-5">
@@ -40,8 +66,11 @@ export default function LoginPage() {
               type="password"
               id="password"
               className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light"
-              required=""
+              required
               placeholder="enter your password"
+              name='password'
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
             />
           </div>
           <div className="flex items-start mb-5"></div>

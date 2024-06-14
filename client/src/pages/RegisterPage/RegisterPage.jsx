@@ -1,7 +1,43 @@
-import { Link } from 'react-router-dom'
 import NavbarLogin from "../../components/NavbarLogin/NavbarLogin";
 
+import { Link } from "react-router-dom";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+
 export default function RegisterPage() {
+  const [username, setCreateUsername] = useState("");
+  const [email, setCreateEmail] = useState("");
+  const [password, setCreatePassword] = useState("");
+
+  const navigate = useNavigate();
+
+  const createUser = async (event) => {
+    event.preventDefault();
+    try {
+      let { data } = await axios({
+        method: "POST",
+        url: "http://localhost:3002/add-user",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
+        data: {
+          username: username,
+          email: email,
+          password: password,
+        },
+      });
+
+      console.log(data);
+
+      setCreateUsername("");
+      setCreateEmail("");
+      setCreatePassword("");
+      navigate("/login");
+    } catch (error) {
+      console.error(error);
+    }
+  };
   return (
     <>
       <NavbarLogin />
@@ -13,7 +49,13 @@ export default function RegisterPage() {
           display: "flex",
         }}
       >
-        <form className="max-w-sm mx-auto">
+        <form
+          className="max-w-sm mx-auto"
+          onSubmit={(event) => {
+            setCreateUsername(event.target.value);
+            console.log(event.target.value);
+          }}
+        >
           <div className="mb-5">
             <label
               htmlFor="email"
@@ -27,6 +69,11 @@ export default function RegisterPage() {
               className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light"
               placeholder="enter username"
               required=""
+              value={username}
+              onChange={(event) => {
+                setCreateUsername(event.target.value);
+                console.log(event.target.value);
+              }}
             />
           </div>
           <div className="mb-5">
@@ -42,6 +89,11 @@ export default function RegisterPage() {
               className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light"
               placeholder="name@mail.com"
               required=""
+              value={email}
+              onChange={(event) => {
+                setCreateEmail(event.target.value);
+                console.log(event.target.value);
+              }}
             />
           </div>
           <div className="mb-1">
@@ -57,6 +109,11 @@ export default function RegisterPage() {
               placeholder="enter password"
               className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light"
               required=""
+              value={password}
+              onChange={(event) => {
+                setCreatePassword(event.target.value);
+                console.log(event.target.value);
+              }}
             />
           </div>
           <div className="flex items-start mb-5"></div>
@@ -73,7 +130,8 @@ export default function RegisterPage() {
               className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
             >
               Have an account?{" "}
-              <Link to={'/login'}
+              <Link
+                to={"/login"}
                 className="text-blue-600 hover:underline dark:text-blue-500"
               >
                 Login here

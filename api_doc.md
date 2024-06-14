@@ -45,8 +45,15 @@ Response (201 - Created)
 
 ```json
 {
-  "id": "integer",
-  "email": "string"
+  "message": "String",
+  "user": {
+      "id": integer,
+      "username": "string",
+      "email": "string",
+      "password": "string",
+      "updatedAt": "date",
+      "createdAt": "date"
+  }
 }
 ```
 
@@ -54,19 +61,19 @@ Response (400 - Bad Request)
 
 ```json
 {
-  "message": "Email is required"
+  "message": "Username cannot be empty"
 }
 OR
 {
-  "message": "Invalid email format"
+  "message": "Must be an email"
 }
 OR
 {
-  "message": "Email must be unique"
+  "message": "This email is already in use"
 }
 OR
 {
-  "message": "Password is required"
+  "message": "Password cannot be empty"
 }
 ```
 
@@ -95,11 +102,11 @@ Response (400 - Bad Request)
 
 ```json
 {
-  "message": "Email is required"
+  "message": "Email cannot be empty"
 }
 OR
 {
-  "message": "Password is required"
+  "message": "Password cannot be empty"
 }
 ```
 
@@ -107,57 +114,15 @@ Response (401 - Unauthorized)
 
 ```json
 {
-  "message": "Invalid email/password"
+  "message": "Invalid login"
 }
 ```
 
-## 3. GET /vouchers
+## 4. POST /game
 
 Description:
 
-- Fetch all vouchers from database
-
-Request
-
-- headers:
-
-```json
-{
-  "Authorization": "Bearer <string token>"
-}
-```
-
-Response (200 - OK)
-
-```json
-[
-  {
-    "id": 1,
-    "title": "Thank You Gift Voucher",
-    "tag": "general",
-    "imageUrl": "https://cdn.dribbble.com/users/416805/screenshots/15604755/media/f279c6ce7d2ef61fe1b301ce6f1cd509.jpg?compress=1&resize=1600x1200"
-  },
-  {
-    "id": 2,
-    "title": "Christmas Gift Voucher",
-    "tag": "christmas",
-    "imageUrl": "https://cdn.dribbble.com/users/4540442/screenshots/9126525/media/0abbd18b7aa27a9835ae2f6ea4d61371.png?compress=1&resize=1600x1200"
-  },
-  {
-    "id": 3,
-    "title": "Christmas Gift Voucher 2",
-    "tag": "christmas",
-    "imageUrl": "https://cdn.dribbble.com/users/322873/screenshots/9152565/media/d2a7e512056ae61e1cb67d7b8d251ca5.jpg?compress=1&resize=1600x1200"
-  },
-  ...,
-]
-```
-
-## 4. POST /gifts/:voucherId
-
-Description:
-
-- send voucher to other user. default status untuk gift adalah 'unclaimed' dan amount adalah 0
+- send input to the Akinaprematur to play the game.
 
 ### Request
 
@@ -169,101 +134,57 @@ Description:
 }
 ```
 
-- params:
-
-```json
-{
-  "voucherId": "integer"
-}
-```
-
 - body:
 
 ```json
 {
-  "message": "Happy Birthday My Friend",
-  "amount" : 500000,
-  "receiverId": 2
-}
-```
-
-Response (201 - Created)
-
-```json
-{
-  "id": 2,
-  "message": "Happy Birthday My Friend",
-  "senderId": 1,
-  "amount": 500000,
-  "voucherId": 1,
-  "receiverId": 2,
-  "status": "unclaimed"
-}
-```
-
-Response (400 - Bad Request)
-
-```json
-{
-  "message": "Message is required"
+  "userAnswer": "Yes",
 }
 OR
 {
-  "message": "receiverId is required"
+  "userAnswer": "No",
 }
-```
 
-Response (404 - Not Found)
-
-```json
-{
-  "message": "Voucher not found"
-}
-```
-
-## 5. GET /gifts
-
-Description:
-
-- Get current user gifts (recipient's ownership)
-
-Request
-
-- headers:
-
-```json
-{
-  "Authorization": "Bearer <string token>"
-}
 ```
 
 Response (200 - OK)
 
 ```json
-[
-  {
-    "id": 2,
-    "message": "Happy Birthday My Friend",
-    "senderId": 1,
-    "amount": 500000,
-    "voucherId": 1,
-    "receiverId": 2,
-    "status": "unclaimed",
-    "voucher": {
-      "id": 1,
-      "title": "Thank You Gift Voucher",
-      "imageUrl": "https://cdn.dribbble.com/users/416805/screenshots/15604755/media/f279c6ce7d2ef61fe1b301ce6f1cd509.jpg?compress=1&resize=1600x1200"
-    }
-  }
-]
+{
+  "Question": "What is on your mind? A Character? An Animal? An Object",
+  "Guess": null
+}
+AFTER THAT
+{
+  "Question": "Is the character from a movie?",
+  "Guess": ""
+}
+WHEN THE AKINAPREMATUR IS CONFIDENT ENOUGH TO MAKE A GUESS
+{
+  "Guess": "I think what your thinking of is (give your guess here). Am i correct?"
+}
+WHEN THE AKINAPREMATUR GUESS IS WRONG
+{
+  "Response": "I'll try to get it right next time. Wanna Play again?"
+}
+WHEN THE ANSWERED "YES" TO "WANNA PLAY AGAIN", AKINAPREMATUR WILL START THE GAME AGAIN
+{
+  "Question": "What is on your mind? A Character? An Animal? An Object",
+  "Guess": null
+}
+WHEN THE ANSWERED "NO" TO "WANNA PLAY AGAIN"
+{
+  "Response": "Thanks for playing!"
+}
+
 ```
 
-## 6. PATCH /gifts/:id/claim
+## 6. PUT /edit/:id
 
 Description:
 
-- Claim gift and update status to claimed 
-- Authorization : recipient's ownership
+- Editing user profile
+- Authorization : Account's ownership
 
 Request
 
@@ -283,19 +204,31 @@ Request
 }
 ```
 
+Request
+
+- body:
+  
+```json
+  {
+    "username": "string",
+    "email": "string",
+    "password": "string"
+  }
+```
+
 Response (200 - OK)
 
 ```json
 {
-  "message": "Gift has been claimed"
-}
-```
-
-Response (404 - Not Found)
-
-```json
-{
-  "message": "Gift not found"
+    "message": "string",
+    "user": {
+        "id": integer,
+        "username": "string",
+        "email": "string",
+        "password": "string",
+        "createdAt": "date",
+        "updatedAt": "date"
+    }
 }
 ```
 
@@ -307,13 +240,12 @@ Response (403 - Forbidden)
 }
 ```
 
-
-## 7. DELETE /gifts/:id
+## 7. DELETE /delete/:id
 
 Description:
 
-- Delete Gift
-- Authorization : recipient's ownership
+- Delete User Account
+- Authorization : Account's ownership
 
 Request
 
@@ -340,23 +272,6 @@ Response (200 - OK)
   "message": "Gift has been deleted"
 }
 ```
-
-Response (404 - Not Found)
-
-```json
-{
-  "message": "Data not found"
-}
-```
-
-Response (403 - Not Found)
-
-```json
-{
-  "message": "You're not authorized"
-}
-```
-
 
 ## Global Error
 
