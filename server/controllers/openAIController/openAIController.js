@@ -3,7 +3,7 @@ require("dotenv").config();
 
 module.exports = async function openAI(userAnswer, history, theme) {
   const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
+    apiKey: process.env.OPENAI_API_KEY
   });
 
   // Construct the history messages
@@ -43,7 +43,7 @@ module.exports = async function openAI(userAnswer, history, theme) {
     The response must be in JSON format like this:
     {
       "Question": "Your next question here",
-      "Guess": "Your guess here (optional)"
+      "Guess": "Your guess here"
     }
     ` : `
     You are playing a guessing game, and you are the guesser. Please start by asking the user for the theme of the game.
@@ -51,7 +51,6 @@ module.exports = async function openAI(userAnswer, history, theme) {
     The response must be in JSON format like this:
     {
       "Question": "Your next question here",
-      "Guess": "Your guess here (optional)"
     }
 
     When you ready to make a guess, give the response in JSON format like this:

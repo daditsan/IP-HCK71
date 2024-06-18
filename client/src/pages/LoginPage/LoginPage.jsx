@@ -1,8 +1,10 @@
-import NavbarLogin from "../../components/NavbarLogin/NavbarLogin";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import axios from '../../utils/axios'
+import alertError from "../../utils/toastify";
+import { alertSuccess } from "../../utils/toastify";
+
+import NavbarLogin from "../../components/NavbarLogin/NavbarLogin";
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -32,7 +34,10 @@ export default function LoginPage() {
 
               localStorage.setItem("access_token", data.access_token);
               navigate("/game");
+              alertSuccess(data?.message, "message")
+
             } catch (error) {
+              alertError(error.response?.data?.message || error.message, 'error')
               console.log(error.response.data.message)
             }
           }}

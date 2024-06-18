@@ -1,3 +1,4 @@
+const { where } = require("sequelize");
 const {
   comparePassword,
   hashPassword,
@@ -15,6 +16,25 @@ class UserController {
     }
   }
 
+  static async getUserById(req, res, next) {
+    try {
+      let { id } = req.user;
+
+      // console.log(req.user);
+      // console.log(id);
+
+      const userById = await User.findByPk(id);
+      if (!userById) throw { name: "NotFound" };
+
+      res.status(200).json({
+        username: userById.username,
+        email: userById.email,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
   static async postRegister(req, res, next) {
     try {
       let { username, email, password } = req.body;
@@ -24,9 +44,7 @@ class UserController {
         password,
       });
 
-      res
-        .status(201)
-        .json({ message: `User ${user.username} successfully created`, user });
+      res.status(201).json({ message: `${user.username} successfully created`, user });
     } catch (error) {
       next(error);
     }
@@ -55,6 +73,7 @@ class UserController {
 
       res.status(200).json({
         access_token: signToken({ id: user.id }),
+        message: "Login successful!",
       });
     } catch (error) {
       next(error);
@@ -63,27 +82,19 @@ class UserController {
 
   static async updateUserById(req, res, next) {
     try {
-      let { id } = req.params;
-      let { username, email, password } = req.body;
-      password = hashPassword(password);
-      let user = await User.findByPk(id);
+      let { id } = req.user;
+      const findUserById = await User.findByPk(id)
+      
+      let { username, email} = req.body;
 
-      if (!user) {
-        throw { name: "NotFound" };
-      }
-
-      await user.update(
+      await findUserById.update(
         {
           username,
           email,
-          password,
         },
-        {
-          where: { id },
-        }
       );
 
-      res.status(200).json({ message: "Update success", user });
+      res.status(200).json({ message: "Update success!"});
     } catch (error) {
       console.log(error);
       next(error);
@@ -92,25 +103,17 @@ class UserController {
 
   static async deleteUserById(req, res, next) {
     try {
-      let { id } = req.params;
-      let findId = await User.findByPk(id);
-      console.log(findId);
-      let deleteUserById = await User.destroy({
-        where: { id },
-      });
+      let { id } = req.user;
+      let findUserById = await User.findByPk(id);
+  
+      await findUserById.destroy();
 
-      if (!deleteUserById) {
-        throw { name: "NotFound" };
-      }
-
-      res.status(200).json({ message: `${findId.username} deleted.` });
+      res.status(200).json({ message: `${findUserById.username} account deleted.` });
     } catch (error) {
-        console.log(error);
+      console.log(error);
       next(error);
     }
   }
-
-  
 }
 
 module.exports = UserController;

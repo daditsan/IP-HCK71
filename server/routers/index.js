@@ -14,8 +14,9 @@ router.post('/login', UserController.postLogin)
 
 router.use(authentication)
 
-router.put('/edit/:id', UserController.updateUserById)
-router.delete('/delete/:id', UserController.deleteUserById)
+router.get('/profile', UserController.getUserById)
+router.put('/editProfile', UserController.updateUserById)
+router.delete('/delete', UserController.deleteUserById)
 
 
 

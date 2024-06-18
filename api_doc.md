@@ -23,9 +23,8 @@ Routes below need authentication:
 
 Routes below need authentication & authorization:
 
-- `PATCH /gifts/:id`
-- `DELETE /gifts/:id`
-- `PATCH /gifts/:id/claim`
+- `PUT /edit/:id`
+- `DELETE /delete/:id`
 
 ## 1. POST /register
 

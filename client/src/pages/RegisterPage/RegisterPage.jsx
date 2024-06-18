@@ -4,6 +4,8 @@ import { Link } from "react-router-dom";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import alertError, { alertSuccess } from "../../utils/toastify";
+
 
 export default function RegisterPage() {
   const [username, setCreateUsername] = useState("");
@@ -17,10 +19,7 @@ export default function RegisterPage() {
     try {
       let { data } = await axios({
         method: "POST",
-        url: "http://localhost:3002/add-user",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-        },
+        url: "http://localhost:3002/register",
         data: {
           username: username,
           email: email,
@@ -34,7 +33,9 @@ export default function RegisterPage() {
       setCreateEmail("");
       setCreatePassword("");
       navigate("/login");
+      alertSuccess(data?.message, "message")
     } catch (error) {
+      alertError(error.response?.data?.message || error.message, "error");
       console.error(error);
     }
   };
@@ -51,10 +52,7 @@ export default function RegisterPage() {
       >
         <form
           className="max-w-sm mx-auto"
-          onSubmit={(event) => {
-            setCreateUsername(event.target.value);
-            console.log(event.target.value);
-          }}
+          onSubmit={createUser}
         >
           <div className="mb-5">
             <label
@@ -72,7 +70,6 @@ export default function RegisterPage() {
               value={username}
               onChange={(event) => {
                 setCreateUsername(event.target.value);
-                console.log(event.target.value);
               }}
             />
           </div>
@@ -92,7 +89,6 @@ export default function RegisterPage() {
               value={email}
               onChange={(event) => {
                 setCreateEmail(event.target.value);
-                console.log(event.target.value);
               }}
             />
           </div>
@@ -112,7 +108,6 @@ export default function RegisterPage() {
               value={password}
               onChange={(event) => {
                 setCreatePassword(event.target.value);
-                console.log(event.target.value);
               }}
             />
           </div>
