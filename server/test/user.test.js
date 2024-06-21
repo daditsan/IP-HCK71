@@ -1,7 +1,7 @@
 const request = require("supertest");
 const app = require("../app");
 
-const sequelize = require("../models");
+const { sequelize } = require("../models");
 const { hashPassword } = require("../helpers/bcrypt/bcrypt");
 const { signToken } = require("../helpers/jwt/jwt");
 const { use } = require("../routers");
@@ -16,6 +16,12 @@ const userRegisterInfo = {
 
 const userInfo = {
   email: "email@mail.com",
+  password: "1234567",
+};
+
+const userInfoRegister = {
+  username: 'usernamey',
+  email: "emailu@mail.com",
   password: "1234567",
 };
 
@@ -77,17 +83,18 @@ describe("users", () => {
         test("Should add registered new User successfuly", async () => {
           let { body, status } = await request(app)
             .post("/register")
-            .set("Authorization", `Bearer ${access_tokenAdmin}`)
-            .send(userInfo);
+            .set("Authorization", `Bearer ${access_token}`)
+            .send(userInfoRegister);
 
-          expect(status).toBe(201);
+            console.log(body);
+            expect(status).toBe(201);
         });
       });
       describe("Failed", () => {
         test("Register should be return error when Email is not filled", async () => {
           let { body, status } = await request(app)
             .post("/register")
-            .set("Authorization", `Bearer ${access_tokenAdmin}`)
+            .set("Authorization", `Bearer ${access_token}`)
             .send({
               username: "newstaff",
               email: "",
@@ -102,31 +109,25 @@ describe("users", () => {
 });
 
 beforeAll(async () => {
-  try {
-    await queryInterface.bulkInsert(
-      "Users",
-      [
-        {
-          ...userRegisterInfo,
-          password: hashPassword(userRegisterInfo.password),
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        },
-      ],
-      {}
-    );
-    const user = await sequelize.models.User.findOne({
-      where: { email: user },
-    });
-    access_token = signToken({ email: user.email });
-  } catch (error) {
-    console.log(error);
-  }
+  await queryInterface.bulkInsert(
+    "Users",
+    [
+      {
+        ...userRegisterInfo,
+        password: hashPassword(userRegisterInfo.password),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    ],
+    {}
+  );
+  
+  // access_token = signToken({ email: user.email });
 });
 
 afterAll(async () => {
   await queryInterface.bulkDelete("Users", null, {
-    turncate: true,
+    truncate: true,
     cascade: true,
     restartIdentity: true,
   });

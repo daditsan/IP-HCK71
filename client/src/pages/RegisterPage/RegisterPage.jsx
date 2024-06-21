@@ -27,8 +27,6 @@ export default function RegisterPage() {
         },
       });
 
-      console.log(data);
-
       setCreateUsername("");
       setCreateEmail("");
       setCreatePassword("");
@@ -52,7 +50,7 @@ export default function RegisterPage() {
       >
         <form
           className="max-w-sm mx-auto"
-          onSubmit={createUser}
+          onSubmit={createUser  }
         >
           <div className="mb-5">
             <label

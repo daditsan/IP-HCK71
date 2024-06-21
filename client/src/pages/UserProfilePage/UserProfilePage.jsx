@@ -37,6 +37,7 @@ export default function UserProfilePage() {
         },
       });
 
+      localStorage.clear();
       navigate("/login");
       alertSuccess(data?.message, "message");
     } catch (error) {

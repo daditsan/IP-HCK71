@@ -53,8 +53,9 @@ router.post("/game", async (req, res) => {
           history.push({ question: response.Question, answer: null });
         }
         
+        console.log(response);
         res.json(response);
-        console.log(history);
+        // console.log(history);
       } catch (error) {
         console.log(error);
         res.status(500).send({ error: 'An error occurred while processing your request.' });
